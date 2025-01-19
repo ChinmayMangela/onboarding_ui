@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:onboarding_ui/constants/color_strings.dart';
+import 'package:onboarding_ui/features/onboarding/presentation/screens/onboarding_screen.dart';
 import 'package:onboarding_ui/features/splash/presentation/widgets/animated_image.dart';
+import 'package:onboarding_ui/main.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,6 +29,12 @@ class _SplashScreenState extends State<SplashScreen>
     );
 
     _animationController.forward();
+
+    Future.delayed(Duration(seconds: 3), () {
+      navigatorKey.currentState!.pushReplacement(
+        MaterialPageRoute(builder: (context) => OnboardingScreen()),
+      );
+    });
   }
 
   @override
