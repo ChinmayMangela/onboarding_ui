@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:onboarding_ui/constants/onboarding_strings.dart';
+import 'package:onboarding_ui/features/auth/presentation/screens/auth_page.dart';
 import 'package:onboarding_ui/features/onboarding/presentation/widgets/onboarding_page.dart';
+import 'package:onboarding_ui/main.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -10,6 +12,7 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
+  late PageController _pageController;
   final List<Widget> _onboardingPages = [
     OnboardingPage(
       imageUrl: OnboardingStrings.onboardingImageOne,
@@ -28,6 +31,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ),
   ];
 
+  void _navigateToNextScreen() {
+    if(_pageController.page == _onboardingPages.length - 1) {
+      navigatorKey.currentState!.push(MaterialPageRoute(builder: (context) => AuthPage()));
+    } else {
+      _pageController.nextPage(duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
+    }
+  }
+
+  void _skipOnboarding() {
+    navigatorKey.currentState!.push(MaterialPageRoute(builder: (context) => AuthPage()));
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController(initialPage: 0);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _pageController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,14 +64,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildBody() {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 50),
       child: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Expanded(
-              child: PageView.builder(itemBuilder: (context, index) {
+              child: PageView.builder(
+                controller: _pageController,
+                itemBuilder: (context, index) {
                 return _onboardingPages[index];
               }, itemCount: _onboardingPages.length,),
             ),
@@ -67,14 +96,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
   Widget _buildSkipButton() {
     return TextButton(
-      onPressed: () {},
+      onPressed: _skipOnboarding,
       child: const Text('Skip'),
     );
   }
 
   Widget _buildNextButton() {
-    return TextButton(
-      onPressed: () {},
+    return ElevatedButton(
+      onPressed: _navigateToNextScreen,
       child: const Text('Next'),
     );
   }
